@@ -13,6 +13,10 @@ interface IPaginationDataTypes {
     max: number,
     data: object | any
 }
+interface IDeleteDialogDataTypes {
+    dialog_model: boolean
+    item: object | any
+}
 interface ICreateDialogFormDataTypes {
     dialog_model: boolean
     editing_items: {
@@ -44,6 +48,10 @@ const pagination_data = ref<IPaginationDataTypes>({
     max_page: 6,
     max: 1,
     data: []
+})
+const delete_dialog_data = ref<IDeleteDialogDataTypes>({
+    dialog_model: false,
+    item: {}
 })
 const create_dialog_form = ref<ICreateDialogFormDataTypes>({
     dialog_model: false,
@@ -131,7 +139,7 @@ async function sendCreateForm() {
         create_dialog_form.value.dialog_model = false
         Notify.create({
             color: "green",
-            message: "Yangi kategoriya yaratishda xatolik yuz berdi!"
+            message: "Kategoriya muvoffaqiyatli yaratildi!"
         })
     } catch (e) {
         Notify.create({
@@ -148,6 +156,49 @@ function showEditDialog(item: any) {
     create_dialog_form.value.name = item.name
     create_dialog_form.value.type_value = item.type
     create_dialog_form.value.dialog_model = true
+}
+async function updateCategory() {
+    try {
+        await http.put(`/api/categories/${create_dialog_form.value.editing_items.item.id}/`, {
+            name: create_dialog_form.value.name,
+            type: create_dialog_form.value.type_value
+        })
+        await getCategories()
+        create_dialog_form.value.dialog_model = false
+        Notify.create({
+            color: "green",
+            message: "Kategoriya muvoffaqiyatli o'zgartirildi!"
+        })
+    } catch (e) {
+        Notify.create({
+            color: "red",
+            message: "Mavjud kategoriyani o'zgartirishda xatolik yuz berdi!"
+        })
+    } finally {
+        Loading.hide()
+    }
+}
+function showDeleteDialog(item: any) {
+    delete_dialog_data.value.item = item
+    delete_dialog_data.value.dialog_model = true
+}
+async function deleteCategory() {
+    try {
+        await http.delete(`/api/categories/${delete_dialog_data.value.item.id}/`)
+        await getCategories()
+        delete_dialog_data.value.dialog_model = false
+        Notify.create({
+            color: "green",
+            message: "Kategoriya muvoffaqiyatli o'chirildi!"
+        })
+    } catch (e) {
+        Notify.create({
+            color: "red",
+            message: "Mavjud kategoriyani o'chirishda xatolik yuz berdi!"
+        })
+    } finally {
+        Loading.hide()
+    }
 }
 
 // mounted
@@ -182,7 +233,7 @@ onMounted(() => {
                                 O'zgartirish
                             </q-tooltip>
                         </q-btn>
-                        <q-btn round unelevated color="red" dense>
+                        <q-btn round unelevated color="red" dense @click="showDeleteDialog(props.row)">
                             <Icon icon="ri-delete-bin-line" />
                             <q-tooltip>
                                 O'chirish
@@ -206,9 +257,9 @@ onMounted(() => {
 
                 <div style="margin-top: 10px;">
                     <q-input outlined dense label="Nomi" v-model="create_dialog_form.name" clearable />
-                    <q-select :disable="create_dialog_form.editing_items.editing" outlined dense label="Turi" v-model="create_dialog_form.type_value"
-                        :options="create_dialog_form.type" option-label="title" option-value="value" clearable map-options
-                        emit-value style="margin-top: 10px;" />
+                    <q-select :disable="create_dialog_form.editing_items.editing" outlined dense label="Turi"
+                        v-model="create_dialog_form.type_value" :options="create_dialog_form.type" option-label="title"
+                        option-value="value" clearable map-options emit-value style="margin-top: 10px;" />
                 </div>
 
                 <div class="bottom-bar">
@@ -222,7 +273,8 @@ onMounted(() => {
                             </q-tooltip>
                         </q-btn>
                         <q-btn unelevated color="secondary" style="margin-right: 5px;"
-                            :disable="!create_dialog_form.name || !create_dialog_form.type_value" v-else>
+                            :disable="!create_dialog_form.name || !create_dialog_form.type_value" v-else
+                            @click="updateCategory">
                             O'zgartirish
                             <q-tooltip>
                                 Mavjud kategoriyani o'zgartirish
@@ -232,6 +284,27 @@ onMounted(() => {
                             Bekor qilish
                             <q-tooltip>
                                 Yangi kategoriya yaratishni bekor qilish
+                            </q-tooltip>
+                        </q-btn>
+                    </div>
+                </div>
+            </div>
+        </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="delete_dialog_data.dialog_model">
+        <q-card style="min-width: 450px; min-height: 200px; padding: 8px;">
+            <div>
+                <span class="title">
+                    <span style="font-weight: 600;">{{ delete_dialog_data.item?.name }}ni</span> o'chirishni tasdiqlaysizmi?
+                </span>
+
+                <div class="bottom-bar">
+                    <div>
+                        <q-btn unelevated color="secondary" style="margin-right: 5px;" @click="deleteCategory">
+                            Tasdiqlash
+                            <q-tooltip>
+                                O'chirish
                             </q-tooltip>
                         </q-btn>
                     </div>

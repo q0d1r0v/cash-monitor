@@ -2,14 +2,18 @@
 // imports
 import { Icon } from '@iconify/vue/dist/iconify.js';
 import { usePageTitle } from '../store/page_title'
+import {useRouter} from 'vue-router'
 
 // store
 const page_title = usePageTitle()
 
+// router
+const router = useRouter()
+
 // methods
 async function logOut() {
     await localStorage.clear()
-    location.reload()
+    router.push('/login')
 }
 
 </script>

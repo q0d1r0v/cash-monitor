@@ -86,6 +86,7 @@ const router = createRouter({
 // router middleware
 router.beforeEach((to, from, next) => {
     if (to.meta.auth == true && !localStorage.getItem('access_token')) {
+        console.log(from)
         next('/auth/login')
     }
     next()

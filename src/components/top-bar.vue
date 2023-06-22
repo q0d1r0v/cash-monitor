@@ -13,7 +13,7 @@ const router = useRouter()
 // methods
 async function logOut() {
     await localStorage.clear()
-    router.push('/login')
+    router.push('/auth/login')
 }
 
 </script>

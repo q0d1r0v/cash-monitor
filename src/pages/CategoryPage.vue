@@ -90,7 +90,7 @@ const headers_of_categories_table: any = [
     {
         name: 'type',
         label: "Turi",
-        field: (row: any) => row.type,
+        field: (row: any) => row.type === 'IN' ? 'Kirim' : 'Chiqim',
         align: "center"
     },
     {

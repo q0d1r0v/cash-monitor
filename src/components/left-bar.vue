@@ -31,20 +31,13 @@ const NavBarItems = ref<INavBarTypes[]>(
         },
         {
             id: 2,
-            icon: 'ri-arrow-down-line',
-            active_icon: 'ri-arrow-down-fill',
-            path: '/make',
-            title: 'Kirim'
+            icon: 'ri-money-dollar-box-line',
+            active_icon: 'ri-money-dollar-box-fill',
+            path: '/cost',
+            title: 'Xarajatlar'
         },
         {
             id: 3,
-            icon: 'ri-arrow-up-line',
-            active_icon: 'ri-arrow-up-fill',
-            path: '/cost',
-            title: 'Chiqim'
-        },
-        {
-            id: 4,
             icon: 'ri-article-line',
             active_icon: 'ri-article-fill',
             path: '/category',
@@ -134,4 +127,5 @@ function goToPage(path: string) {
     .active-text {
         color: #1375f7;
     }
-}</style>
+}
+</style>

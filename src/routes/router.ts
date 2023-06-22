@@ -12,9 +12,7 @@ const RegisterPage = () => import('../pages/RegisterPage.vue')
 
 // pages
 const HomePage = () => import('../pages/HomePage.vue')
-const MakePage = () => import('../pages/MakePage.vue')
 const CostPage = () => import('../pages/CostPage.vue')
-const AccountPage = () => import('../pages/AccountPage.vue')
 const NotFoundPage = () => import('../pages/NotFoundPage.vue')
 const CategoryPage = () => import('../pages/CategoryPage.vue')
 
@@ -53,25 +51,9 @@ const router = createRouter({
                     }
                 },
                 {
-                    name: 'MakePage',
-                    path: '/make',
-                    component: MakePage,
-                    meta: {
-                        auth: true
-                    }
-                },
-                {
                     name: 'CostPage',
                     path: '/cost',
                     component: CostPage,
-                    meta: {
-                        auth: true
-                    }
-                },
-                {
-                    name: 'AccountPage',
-                    path: '/account',
-                    component: AccountPage,
                     meta: {
                         auth: true
                     }

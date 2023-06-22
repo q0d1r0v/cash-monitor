@@ -2,20 +2,14 @@
 // imports
 import { Icon } from '@iconify/vue/dist/iconify.js';
 import { usePageTitle } from '../store/page_title'
-import {useRouter, useRoute} from 'vue-router'
 
 // store
 const page_title = usePageTitle()
 
-// route
-const route = useRoute()
-
-// router
-const router = useRouter()
-
 // methods
-function goToAccountPage() {
-    router.push('/account')
+async function logOut() {
+    await localStorage.clear()
+    location.reload()
 }
 
 </script>
@@ -28,8 +22,18 @@ function goToAccountPage() {
             </span>
         </div>
         <div class="right-items">
-            <q-btn unelevated round dense :style="route.fullPath === '/account' ? 'border: 1px solid #1375f7' : 'border: 1px solid rgba(0, 0, 0, 0.1);'" @click="goToAccountPage">
-                <Icon :icon="route.fullPath === '/account' ? 'ri-user-fill' : 'ri-user-line'" :color="route.fullPath === '/account' ? '#1375f7' : ''" />
+            <q-btn color="primary" outline round dense>
+                <Icon icon="ri-logout-box-r-line" />
+                <q-tooltip>
+                    Chiqish
+                </q-tooltip>
+                <q-menu transition-show="scale" transition-hide="scale">
+                    <q-list style="min-width: 80px" dense>
+                        <q-item clickable @click="logOut()">
+                            <q-item-section>Chiqish</q-item-section>
+                        </q-item>
+                    </q-list>
+                </q-menu>
             </q-btn>
         </div>
     </div>

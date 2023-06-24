@@ -2,7 +2,7 @@
 // imports
 import { onMounted, ref } from 'vue'
 import { usePageTitle } from '../store/page_title'
-import moment from 'moment'
+import { representDate } from '../utils/dateformat'
 import { Loading, Notify } from 'quasar';
 import http from '../utils/axios';
 
@@ -26,6 +26,7 @@ interface ICostCreateFormDataTypes {
     date: string
     time: string
     full_date: string
+    full_date_custom: string
     to_whom: string
     categories: {
         value: string
@@ -60,20 +61,22 @@ const cost_create_forms = ref<ICostCreateFormDataTypes>({
     date: '',
     time: '',
     full_date: '',
+    full_date_custom: '',
     to_whom: '',
     categories: {
         value: '',
         items: []
     },
-    uzs_sum: '',
-    usd_sum: '',
+    uzs_sum: '0',
+    usd_sum: '0',
     usd_rate: 0,
     description: ''
 })
 
 // methods
 function setFirstData() {
-    cost_create_forms.value.full_date = moment().format('YYYY-MM-DDTHH:MM')
+    cost_create_forms.value.full_date = new Date().toISOString()
+    cost_create_forms.value.full_date_custom = representDate(cost_create_forms.value.full_date)
     cost_create_forms.value.cost_types.value = ''
     cost_create_forms.value.to_whom = ''
     cost_create_forms.value.categories.value = ''
@@ -85,11 +88,12 @@ function setFirstData() {
 async function getCategories() {
     try {
         Loading.show()
-        cost_create_forms.value.date = moment().format('YYYY MM DD')
+        cost_create_forms.value.date = new Date().getDate().toString()
+        cost_create_forms.value.time = new Date().getTime().toString()
         cost_create_forms.value.to_whom = ''
         cost_create_forms.value.categories.value = ''
-        cost_create_forms.value.uzs_sum = ''
-        cost_create_forms.value.usd_sum = ''
+        cost_create_forms.value.uzs_sum = '0'
+        cost_create_forms.value.usd_sum = '0'
         cost_create_forms.value.usd_rate = ''
         cost_create_forms.value.description = ''
         const { data } = await http.get('/api/categories', {
@@ -126,8 +130,8 @@ async function sendCostForm() {
         cost_create_forms.value.date = ''
         cost_create_forms.value.to_whom = ''
         cost_create_forms.value.categories.value = ''
-        cost_create_forms.value.uzs_sum = ''
-        cost_create_forms.value.usd_sum = ''
+        cost_create_forms.value.uzs_sum = '0'
+        cost_create_forms.value.usd_sum = '0'
         cost_create_forms.value.usd_rate = ''
         cost_create_forms.value.description = ''
         Notify.create({
@@ -146,6 +150,7 @@ async function sendCostForm() {
 function setDateAndTime() {
     cost_create_forms.value.full_date = ''
     cost_create_forms.value.full_date = cost_create_forms.value.date.split('/').join('-') + 'T' + cost_create_forms.value.time.split(' ')[1]
+    cost_create_forms.value.full_date_custom = representDate(cost_create_forms.value.full_date)
 }
 
 // mounted
@@ -162,14 +167,15 @@ onMounted(() => {
             <q-select v-model="cost_create_forms.cost_types.value" :options="cost_create_forms.cost_types.items"
                 option-label="title" option-value="value" emit-value map-options outlined dense label="Xarajat turi"
                 style="background: #fff; width: 50%; margin-right: 10px;" clearable @update:model-value="getCategories" />
+            
             <q-input :disable="!cost_create_forms.cost_types.value" label="Sana" outlined dense
-                style="background: #fff; width: 50%;" clearable v-model="cost_create_forms.full_date">
+                style="background: #fff; width: 50%;" clearable v-model="cost_create_forms.full_date_custom">
                 <template #prepend>
                     <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                             <q-date v-model="cost_create_forms.date" @update:model-value="setDateAndTime">
                                 <div class="row items-center justify-end">
-                                    <q-btn v-close-popup label="Yopish" color="red" flat />
+                                    <q-btn v-close-popup label="Yopish" color="blue" flat />
                                 </div>
                             </q-date>
                         </q-popup-proxy>
@@ -182,7 +188,7 @@ onMounted(() => {
                             <q-time v-model="cost_create_forms.time" mask="YYYY-MM-DD HH:mm" format24h
                                 @update:model-value="setDateAndTime">
                                 <div class="row items-center justify-end">
-                                    <q-btn v-close-popup label="Yopish" color="red" flat />
+                                    <q-btn v-close-popup label="Yopish" color="blue" flat />
                                 </div>
                             </q-time>
                         </q-popup-proxy>

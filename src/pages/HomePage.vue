@@ -6,6 +6,8 @@ import { Loading, Notify } from 'quasar';
 import http from '../utils/axios';
 import { Icon } from '@iconify/vue/dist/iconify.js';
 
+import { representDate } from '../utils/dateformat';
+
 // types
 interface IPaginationDataTypes {
     page_number: number,
@@ -68,8 +70,9 @@ const filter_form = ref<IFilterFormDataTypes>({
             }
         ]
     },
-    ordering: 'issued'
+    ordering: '-issued'
 })
+
 const headers: any = [
     {
         name: 'id',
@@ -110,7 +113,7 @@ const headers: any = [
     {
         name: 'date',
         label: "Sana va vaqt",
-        field: (row: any) => row.issued,
+        field: (row: any) => representDate(row.issued),
         align: "center"
     },
     {
@@ -137,7 +140,7 @@ async function getStatistics() {
                 date_after: from_date,
                 date_before: to_date,
                 ordering: filter_form.value.ordering,
-                category_type: filter_form.value.categories.value
+                category__type: filter_form.value.categories.value
             }
         })
         pagination_data.value.max = Math.ceil(data.count / 100)
@@ -165,6 +168,50 @@ function changeIssued() {
     }
 }
 
+function DownloadFile(downloadLink: string) {
+        const link = document.createElement('a');
+        link.href = downloadLink;
+        document.body.appendChild(link);
+        link.click(); // Trigger the download
+        document.body.removeChild(link); // Clean up by removing the anchor element
+    }
+
+async function downloadExcel() {
+    try {
+
+        Loading.show()
+        let from_date = ''
+        let to_date = ''
+        if (filter_form.value.dates.value) {
+            from_date = filter_form.value.dates.value.split('/')[0]
+            to_date = filter_form.value.dates.value.split('/')[1]
+        }
+        const { data } = await http.get('/api/actions/excel/', {
+            params: {
+                page: pagination_data.value.page_number,
+                search: filter_form.value.search,
+                date_after: from_date,
+                date_before: to_date,
+                ordering: filter_form.value.ordering,
+                category__type: filter_form.value.categories.value
+            }
+        })
+        const link = data.file_link
+        console.log(link);
+        
+        DownloadFile("http://192.168.13.147:8005/media/2/report.xlsx")
+        
+    } catch (e) {
+        Notify.create({
+            color: "red",
+            message: "Excel yuklab olishda xatolik yuz berdi!"
+        })
+    } finally {
+        Loading.hide()
+    }
+    
+}
+
 // mounted
 onMounted(() => {
     page_title.changePageTitle('Dashboard')
@@ -177,7 +224,7 @@ onMounted(() => {
     <div>
         <div class="top-filter-bar">
             <div class="left-data">
-                <div style="width: 200px">
+                <div style="min-width: 200px">
                     <q-input v-model="filter_form.search" placeholder="Qidiruv..." outlined dense clearable
                         @keyup.enter="getStatistics">
                         <template #append>
@@ -208,7 +255,7 @@ onMounted(() => {
             </div>
             <div class="right-data">
                 <div style="margin-right: 10px;">
-                    <q-btn unelevated color="secondary">
+                    <q-btn unelevated color="secondary" @click="downloadExcel">
                         Excelga yuklash
                         <q-tooltip>
                             Excelga yuklash

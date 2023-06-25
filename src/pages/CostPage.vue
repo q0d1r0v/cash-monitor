@@ -214,7 +214,7 @@ onMounted(() => {
             <q-input :disable="!cost_create_forms.cost_types.value" v-model="cost_create_forms.usd_rate" outlined dense
                 label="Valyuta kursi summasi" style="background: #fff; width: 50%; margin-right: 10px" clearable />
             <q-input :disable="!cost_create_forms.cost_types.value" v-model="cost_create_forms.description" outlined dense
-                label="Izoh" style="background: #fff; width: 50%" clearable type="textarea" />
+                label="Izoh" maxlength="255" style="background: #fff; width: 50%" clearable type="textarea" />
         </div>
         <div style="margin-top: 10px; display: flex; align-items: center; justify-content: end;">
             <q-btn unelevated color="secondary"

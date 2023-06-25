@@ -107,7 +107,7 @@ const headers: any = [
     {
         name: 'amount_dollar',
         label: "USD Sum",
-        field: (row: any) => row.dolar_price,
+        field: (row: any) => row.amount_dollar,
         align: "center"
     },
     {

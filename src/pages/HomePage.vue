@@ -197,9 +197,8 @@ async function downloadExcel() {
             }
         })
         const link = data.file_link
-        console.log(link);
         
-        DownloadFile("http://192.168.13.147:8005/media/2/report.xlsx")
+        DownloadFile(link)
         
     } catch (e) {
         Notify.create({

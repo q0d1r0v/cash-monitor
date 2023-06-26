@@ -164,6 +164,20 @@ function changeIssued() {
         getStatistics()
     }
 }
+async function getExcelFile() {
+    try {
+        Loading.show()
+        const { data } = await http.get('/api/actions/excel/')
+        console.log(data)
+    } catch (e) {
+        Notify.create({
+            color: "red",
+            message: "Excel fileni yuklab olishda xatolik yuz berdi!"
+        })
+    } finally {
+        Loading.hide()
+    }
+}
 
 // mounted
 onMounted(() => {
@@ -208,7 +222,7 @@ onMounted(() => {
             </div>
             <div class="right-data">
                 <div style="margin-right: 10px;">
-                    <q-btn unelevated color="secondary">
+                    <q-btn unelevated color="secondary" @click="getExcelFile">
                         Excelga yuklash
                         <q-tooltip>
                             Excelga yuklash
